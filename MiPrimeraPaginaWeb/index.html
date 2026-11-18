@@ -1,0 +1,1675 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANGEL OS</title>
+<style>
+:root {
+    --accent: #a99cff;
+    --panel: #191b24ed;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: #10131b;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+button { cursor: pointer; font: inherit; }
+.hidden { display: none !important; }
+video {
+    pointer-events: none !important;
+    outline: none;
+    border: none;
+    user-select: none;
+}
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-overflow-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+#intro {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+#intro video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.shade {
+    position: absolute;
+    inset: 0;
+    background: #0007;
+}
+.intro-content {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 8px black;
+    padding: 20px;
+}
+.intro-content h1 {
+    color: var(--accent);
+    font-size: 55px;
+}
+.kicker { letter-spacing: 3px; }
+#enter {
+    background: #555;
+    color: white;
+    border: 3px solid #222;
+    padding: 15px 32px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    box-shadow: 0 5px #111;
+    transition: .2s;
+}
+#enter:hover {
+    background: #777;
+    transform: translateY(-3px);
+}
+#intro.leaving {
+    animation: fadeOut .8s forwards;
+}
+@keyframes fadeOut {
+    to { opacity: 0; transform: scale(1.04); }
+}
+#desktop {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+.desktop-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+#desktop:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #10251e66;
+    z-index: -1;
+    pointer-events: none;
+}
+.topbar {
+    height: 55px;
+    background: #0c0e14c9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    position: relative;
+    z-index: 2;
+}
+.brand {
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #c4baff;
+}
+.desktop-content {
+    max-width: 1100px;
+    margin: auto;
+    padding: 35px 22px 70px;
+    position: relative;
+    z-index: 1;
+}
+.welcome-line {
+    color: #d5d0ff;
+    letter-spacing: 2px;
+    font-size: 13px;
+}
+.desktop-title {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+.inventory {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 15px;
+    max-width: 1100px;
+    margin-top: 30px;
+}
+.app {
+    min-height: 135px;
+    border: 2px solid #ffffff33;
+    background: linear-gradient(145deg, #373a46ed, #191b24ed);
+    box-shadow: 0 5px #0008;
+    color: white;
+    padding: 16px 10px;
+    transition: .2s;
+}
+.app:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    background: #554e77;
+}
+.item-icon {
+    font-size: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    margin-bottom: 10px;
+}
+.item-icon img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    display: block;
+}
+.app strong {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+.app small {
+    display: block;
+    color: #ccc;
+    margin-top: 8px;
+}
+.full-page {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    overflow-y: auto;
+    background: #10131b;
+    isolation: isolate;
+    animation: pageIn .5s;
+}
+@keyframes pageIn {
+    from { opacity: 0; transform: scale(.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+.page-background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+.full-page:before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: #050a0fbb;
+    z-index: -1;
+    pointer-events: none;
+}
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 30px;
+    background: #0a0a0aaa;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    backdrop-filter: blur(10px);
+}
+.page-back {
+    background: #555;
+    color: white;
+    border: 2px solid #999;
+    padding: 12px 18px;
+    transition: .2s;
+}
+.page-back:hover { background: #8171bd; }
+.about-content {
+    max-width: 1150px;
+    margin: 45px auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 35px;
+    align-items: center;
+}
+.about-profile {
+    background: var(--panel);
+    border: 2px solid #ffffff35;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+}
+.about-profile-top {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+.about-icon {
+    width: 85px;
+    height: 85px;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    image-rendering: pixelated;
+}
+.about-profile h1 {
+    font-size: 30px;
+    margin: 0;
+    color: var(--accent);
+}
+.about-tag {
+    color: #b7aaff;
+    letter-spacing: 2px;
+    font-size: 12px;
+    margin-top: 8px;
+}
+.about-description {
+    line-height: 1.8;
+    color: #e5e5e5;
+}
+.about-description strong { color: #b9aaff; }
+.about-data {
+    margin-top: 20px;
+    padding: 16px;
+    background: #ffffff12;
+    border: 1px solid #ffffff25;
+}
+.about-data h3 { color: #b9aaff; }
+.about-video-container {
+    background: #14141cdd;
+    padding: 12px;
+    border: 2px solid #ffffff45;
+}
+.about-video-container video {
+    width: 100%;
+    max-height: 480px;
+    object-fit: contain;
+    display: block;
+}
+.about-video-caption {
+    text-align: center;
+    color: #c5baff;
+    letter-spacing: 2px;
+    font-size: 12px;
+    padding: 12px;
+}
+.history-content {
+    max-width: 1100px;
+    margin: 35px auto 80px;
+    padding: 20px;
+}
+.history-hero {
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr;
+    gap: 22px;
+    align-items: center;
+    background: var(--panel);
+    border: 2px solid #ffffff35;
+    padding: 24px;
+    margin-bottom: 40px;
+}
+.history-logo {
+    width: 95px;
+    height: 95px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+.history-intro h1 {
+    font-size: 36px;
+    color: #c1b5ff;
+    margin: 0;
+}
+.history-intro p {
+    line-height: 1.7;
+    color: #ddd;
+}
+.history-video {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    background: #111;
+    border: 2px solid #888;
+}
+.history-video-label {
+    text-align: center;
+    color: #c5baff;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 8px;
+}
+.timeline-title {
+    text-align: center;
+    color: #c1b5ff;
+    font-size: 27px;
+    margin: 45px 0 30px;
+}
+.timeline {
+    position: relative;
+    max-width: 850px;
+    margin: auto;
+}
+.timeline:before {
+    content: "";
+    position: absolute;
+    left: 22px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(#b6a8ff, #5b4b86, #b6a8ff);
+}
+.history-chapter {
+    position: relative;
+    margin-bottom: 25px;
+    padding-left: 65px;
+    animation: chapterIn .6s ease both;
+}
+.history-chapter:nth-child(2) { animation-delay: .08s; }
+.history-chapter:nth-child(3) { animation-delay: .16s; }
+.history-chapter:nth-child(4) { animation-delay: .24s; }
+.history-chapter:nth-child(5) { animation-delay: .32s; }
+.history-chapter:nth-child(6) { animation-delay: .4s; }
+.history-chapter:nth-child(7) { animation-delay: .48s; }
+.history-chapter:nth-child(8) { animation-delay: .56s; }
+@keyframes chapterIn {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.chapter-marker {
+    position: absolute;
+    left: 8px;
+    top: 18px;
+    width: 32px;
+    height: 32px;
+    border: 3px solid #d4caff;
+    background: #50436f;
+    transform: rotate(45deg);
+}
+.chapter-card {
+    background: var(--panel);
+    border: 2px solid #ffffff32;
+    padding: 22px;
+    transition: .2s;
+}
+.chapter-card:hover {
+    transform: translateX(6px);
+    border-color: #b7aaff;
+}
+.chapter-number {
+    color: #b9aaff;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+.chapter-card h3 {
+    font-size: 21px;
+    margin: 9px 0;
+}
+.chapter-card p {
+    color: #ddd;
+    line-height: 1.8;
+    margin-bottom: 0;
+}
+.chapter-card strong { color: #c4baff; }
+.history-ending {
+    text-align: center;
+    margin: 50px auto;
+    padding: 28px;
+    max-width: 750px;
+    background: var(--panel);
+    border: 2px solid #b7aaff66;
+}
+.history-ending h2 { color: #c4baff; }
+.history-ending p { line-height: 1.8; color: #ddd; }
+.adventure-content {
+    max-width: 1180px;
+    margin: 30px auto 80px;
+    padding: 20px;
+}
+.adventure-hero {
+    display: grid;
+    grid-template-columns: 105px 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 25px;
+    background: var(--panel);
+    border: 2px solid #ffffff35;
+    margin-bottom: 28px;
+    backdrop-filter: blur(10px);
+}
+.adventure-logo {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+.adventure-kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #bdb0ff;
+}
+.adventure-hero h1 {
+    font-size: clamp(30px, 5vw, 48px);
+    margin: 5px 0 8px;
+    color: #c5bbff;
+}
+.adventure-hero p {
+    line-height: 1.7;
+    color: #e2e3e8;
+    margin: 0;
+}
+.adventure-videos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 0 0 48px;
+}
+.adventure-video-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    background: #080a0d;
+    border: 2px solid #ffffff45;
+    box-shadow: 0 7px 18px #0008;
+    transition: .3s;
+}
+.adventure-video-card:hover {
+    border-color: #c4baff;
+    transform: translateY(-4px);
+}
+.adventure-video-card video {
+    display: block;
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+}
+.destination { margin: 42px 0 55px; }
+.destination-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 17px;
+    border-bottom: 1px solid #ffffff40;
+    padding-bottom: 12px;
+}
+.destination-heading h2 {
+    font-size: 25px;
+    margin: 0;
+    letter-spacing: 1px;
+}
+.destination-heading p {
+    margin: 0;
+    color: #d0c9ef;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+.destination-number {
+    color: #b9aaff;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(105px, 10vw);
+    gap: 12px;
+}
+.photo-card {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid #ffffff45;
+    background: #151821;
+    box-shadow: 0 7px 18px #0007;
+    min-height: 150px;
+    transition: .3s;
+}
+.photo-card img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    transition: transform .5s;
+}
+.photo-card:after {
+    content: "";
+    position: absolute;
+    inset: 40% 0 0;
+    background: linear-gradient(transparent, #000b);
+    pointer-events: none;
+}
+.photo-card:hover {
+    border-color: #c4baff;
+    transform: translateY(-4px);
+}
+.photo-card:hover img { transform: scale(1.09); }
+.photo-label {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    z-index: 1;
+}
+.photo-hint {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: #111b;
+    color: white;
+    padding: 6px 8px;
+    font-size: 10px;
+    z-index: 1;
+}
+.colombia-grid .photo-card:nth-child(1) {
+    grid-column: span 7;
+    grid-row: span 2;
+}
+.colombia-grid .photo-card:nth-child(2),
+.colombia-grid .photo-card:nth-child(3) {
+    grid-column: span 5;
+}
+.universal-grid .photo-card:nth-child(1) {
+    grid-column: span 7;
+    grid-row: span 2;
+}
+.universal-grid .photo-card:nth-child(2),
+.universal-grid .photo-card:nth-child(3) {
+    grid-column: span 5;
+}
+.universal-grid .photo-card:nth-child(4) { grid-column: span 6; }
+.potosi-grid .photo-card:nth-child(1) {
+    grid-column: span 6;
+    grid-row: span 2;
+}
+.potosi-grid .photo-card:nth-child(2),
+.potosi-grid .photo-card:nth-child(3) {
+    grid-column: span 6;
+}
+.adventure-note {
+    margin-top: 38px;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid #ffffff35;
+    color: #ddd;
+    line-height: 1.7;
+}
+.adventure-ending {
+    text-align: center;
+    color: #c5bbff;
+    letter-spacing: 2px;
+    font-size: 11px;
+    margin: 45px 0;
+}
+.tastes-content {
+    max-width: 1150px;
+    margin: 30px auto 80px;
+    padding: 20px;
+}
+.tastes-hero {
+    display: grid;
+    grid-template-columns: 105px 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 25px;
+    background: var(--panel);
+    border: 2px solid #ffffff35;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+}
+.tastes-logo {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+.tastes-kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #bdb0ff;
+}
+.tastes-hero h1 {
+    font-size: clamp(30px, 5vw, 46px);
+    color: #c5bbff;
+    margin: 5px 0 8px;
+}
+.tastes-hero p {
+    color: #ddd;
+    line-height: 1.7;
+    margin: 0;
+}
+.tastes-section-title {
+    color: #c4baff;
+    letter-spacing: 2px;
+    font-size: 13px;
+    margin: 42px 0 18px;
+    border-bottom: 1px solid #ffffff40;
+    padding-bottom: 12px;
+}
+.taste-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 25px;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 22px;
+    background: #191b24e8;
+    border: 2px solid #ffffff35;
+    backdrop-filter: blur(8px);
+    transition: .25s;
+}
+.taste-card:hover {
+    border-color: #b9aaff;
+    transform: translateY(-3px);
+}
+.taste-card.reverse .taste-media { order: 2; }
+.taste-card.reverse .taste-info { order: 1; }
+.taste-media {
+    min-width: 0;
+    background: #08090e;
+    border: 1px solid #ffffff40;
+    overflow: hidden;
+}
+.taste-media video {
+    width: 100%;
+    height: 270px;
+    display: block;
+    object-fit: cover;
+}
+.taste-title-image {
+    display: block;
+    width: min(100%, 340px);
+    max-height: 115px;
+    object-fit: contain;
+    object-position: left center;
+    margin-bottom: 18px;
+}
+.taste-info h2 {
+    color: #c5bbff;
+    font-size: 25px;
+    margin: 0 0 15px;
+}
+.taste-info p {
+    color: #e0e0e0;
+    line-height: 1.8;
+    font-size: 15px;
+    margin: 0 0 12px;
+}
+.taste-category {
+    color: #b9aaff;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+.tastes-ending {
+    text-align: center;
+    padding: 28px;
+    background: var(--panel);
+    border: 1px solid #ffffff35;
+    margin-top: 40px;
+}
+.tastes-ending h2 {
+    color: #c4baff;
+    letter-spacing: 2px;
+}
+.tastes-ending p {
+    color: #ddd;
+    line-height: 1.7;
+}
+#photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: #000e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+}
+#photo-lightbox img {
+    max-width: 90vw;
+    max-height: 82vh;
+    object-fit: contain;
+    border: 2px solid #b9aaff;
+}
+.lightbox-close {
+    position: absolute;
+    top: 22px;
+    right: 25px;
+    background: #282332;
+    color: white;
+    border: 1px solid #b9aaff;
+    padding: 11px 16px;
+}
+.lightbox-caption {
+    position: absolute;
+    bottom: 15px;
+    text-align: center;
+    color: #e6e0ff;
+    letter-spacing: 2px;
+    font-size: 12px;
+}
+#window-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: #0009;
+    backdrop-filter: blur(5px);
+}
+.window {
+    width: min(720px, 100%);
+    max-height: 78vh;
+    overflow: auto;
+    background: #191b24;
+    border: 2px solid #aaa;
+}
+.window-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #39334f;
+    padding: 13px 16px;
+}
+.window-head h2 { font-size: 15px; }
+.close {
+    background: #733d48;
+    color: white;
+    border: 1px solid #d99;
+    padding: 8px 12px;
+}
+.window-body {
+    padding: 24px;
+    line-height: 1.65;
+}
+@media(max-width:750px) {
+    .about-content {
+        grid-template-columns: 1fr;
+        margin: 20px auto;
+        gap: 25px;
+    }
+    .history-hero {
+        grid-template-columns: 80px 1fr;
+    }
+    .history-logo {
+        width: 75px;
+        height: 75px;
+    }
+    .history-video-box { grid-column: 1/-1; }
+    .adventure-hero,
+    .tastes-hero {
+        grid-template-columns: 75px 1fr;
+        padding: 17px;
+    }
+    .adventure-logo,
+    .tastes-logo {
+        width: 70px;
+        height: 70px;
+    }
+    .adventure-video-card video { height: 210px; }
+    .photo-grid {
+        grid-auto-rows: 130px;
+        gap: 8px;
+    }
+    .colombia-grid .photo-card:nth-child(1),
+    .universal-grid .photo-card:nth-child(1),
+    .potosi-grid .photo-card:nth-child(1) {
+        grid-column: span 12;
+        grid-row: span 2;
+    }
+    .colombia-grid .photo-card:nth-child(2),
+    .colombia-grid .photo-card:nth-child(3),
+    .universal-grid .photo-card:nth-child(2),
+    .universal-grid .photo-card:nth-child(3),
+    .universal-grid .photo-card:nth-child(4),
+    .potosi-grid .photo-card:nth-child(2),
+    .potosi-grid .photo-card:nth-child(3) {
+        grid-column: span 6;
+    }
+    .taste-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 15px;
+    }
+    .taste-card.reverse .taste-media,
+    .taste-card.reverse .taste-info {
+        order: initial;
+    }
+    .taste-media video { height: 240px; }
+    .taste-title-image {
+        max-height: 90px;
+        margin-bottom: 12px;
+    }
+}
+@media(max-width:600px) {
+    .topbar { padding: 0 12px; }
+    .desktop-content { padding: 25px 14px 70px; }
+    .inventory { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .app { min-height: 115px; }
+    .page-header { padding: 14px; }
+    .page-back {
+        padding: 10px;
+        font-size: 11px;
+    }
+    .history-chapter { padding-left: 48px; }
+    .timeline:before { left: 15px; }
+    .chapter-marker {
+        left: 1px;
+        width: 30px;
+        height: 30px;
+    }
+    .destination-heading {
+        align-items: start;
+        flex-direction: column;
+    }
+    .photo-grid { grid-auto-rows: 115px; }
+    .photo-label {
+        font-size: 10px;
+        left: 8px;
+        bottom: 8px;
+    }
+    .adventure-videos {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 35px;
+    }
+    .adventure-video-card video { height: 230px; }
+}
+</style>
+</head>
+<body>
+<section id="intro">
+    <video autoplay muted loop playsinline>
+        <source src="recursos/fondo-inicio.mp4" type="video/mp4">
+    </video>
+    <div class="shade"></div>
+    <div class="intro-content">
+        <p class="kicker">PERSONAL SYSTEM</p>
+        <h1>ANGEL OS</h1>
+        <p>Bienvenido a mi espacio personal.</p>
+        <button id="enter">▶ ENTRAR AL SISTEMA</button>
+        <audio id="audio" src="sounds/click.mp3"></audio>
+        <p>Un pequeño universo creado por Ángel Santiago.</p>
+    </div>
+</section>
+<main id="desktop" class="hidden">
+    <video class="desktop-video" autoplay muted loop playsinline>
+        <source src="recursos/fondo-minecraft.mp4" type="video/mp4">
+    </video>
+    <header class="topbar">
+        <div class="brand">ANGEL OS</div>
+        <div>
+            <span id="clock">--:--</span> |
+            SISTEMA EN LÍNEA
+        </div>
+    </header>
+    <section class="desktop-content">
+        <p class="welcome-line">BIENVENIDO, JUGADOR</p>
+        <h2 class="desktop-title">Mi inventario</h2>
+        <p>Selecciona un objeto para explorar mi mundo.</p>
+        <div class="inventory">
+            <button class="app" data-app="about">
+                <span class="item-icon">
+                    <img src="recursos/icono_sobremi.webp" alt="Sobre mí">
+                </span>
+                <strong>SOBRE MÍ</strong>
+                <small>Identidad del jugador</small>
+            </button>
+            <button class="app" data-app="story">
+                <span class="item-icon">
+                    <img src="recursos/logo_mihistoria.png" alt="Mi historia">
+                </span>
+                <strong>MI HISTORIA</strong>
+                <small>Origen y recuerdos</small>
+            </button>
+            <button class="app" data-app="adventures">
+                <span class="item-icon">
+                    <img src="recursos/icono_aventuras.webp" alt="Aventuras">
+                </span>
+                <strong>AVENTURAS</strong>
+                <small>Lugares y viajes</small>
+            </button>
+            <button class="app" data-app="favorites">
+                <span class="item-icon">
+                    <img src="recursos/icono_misgustos.webp" alt="Mis gustos">
+                </span>
+                <strong>MIS GUSTOS</strong>
+                <small>Lo que me apasiona</small>
+            </button>
+            <button class="app" data-app="contact">
+                <span class="item-icon">✉️</span>
+                <strong>CONTACTO</strong>
+                <small>Enviar un mensaje</small>
+            </button>
+        </div>
+    </section>
+</main>
+<section id="about-page" class="full-page hidden">
+    <video class="page-background" autoplay muted loop playsinline>
+        <source src="recursos/fondo_sobremi.mp4" type="video/mp4">
+    </video>
+    <header class="page-header">
+        <div class="brand">ANGEL OS</div>
+        <button class="page-back" id="back-about">◀ VOLVER AL INVENTARIO</button>
+    </header>
+    <div class="about-content">
+        <div class="about-profile">
+            <div class="about-profile-top">
+                <img src="recursos/icono_sobremi.webp" class="about-icon" alt="Avatar">
+                <div>
+                    <h1>¡Hola, soy Ángel!</h1>
+                    <div class="about-tag">JELTY · PERFIL DEL JUGADOR</div>
+                </div>
+            </div>
+            <div class="about-description">
+                <p>
+                    Hola, soy <strong>Ángel Santiago Hernández Flores</strong>.
+                    Este es mi espacio personal, un lugar donde estaré
+                    hablando sobre mí, compartiendo quién soy, qué me
+                    gusta y qué cosas forman parte de mi mundo.
+                </p>
+                <p>
+                    Tengo <strong>19 años</strong>, nací en
+                    <strong>Chihuahua capital</strong> y soy zurdo.
+                    Mi cumpleaños es el <strong>7 de noviembre</strong>.
+                </p>
+                <p>
+                    Me considero una persona
+                    <strong>curiosa, creativa y carismática</strong>.
+                    Me gusta descubrir cosas nuevas, explorar ideas
+                    y aprender.
+                </p>
+                <p>
+                    ¿Jelty? Es un apodo que me acompaña desde primero
+                    de secundaria. Han pasado los años y ahora mi
+                    nombre es todo un mito.
+                </p>
+            </div>
+            <div class="about-data">
+                <h3>INFORMACIÓN PERSONAL</h3>
+                <p>Edad: <strong>19 años</strong></p>
+                <p>Cumpleaños: <strong>7 de noviembre</strong></p>
+                <p>Nacimiento: <strong>Chihuahua, México</strong></p>
+                <p>Dato curioso: <strong>Soy zurdo</strong></p>
+                <p>Apodo: <strong>Jelty</strong></p>
+            </div>
+            <div class="about-data">
+                <h3>EDUCACIÓN</h3>
+                <p>Carrera: <strong>Ingeniería en Sistemas</strong></p>
+                <p>Universidad: <strong>La Salle Chihuahua</strong></p>
+            </div>
+        </div>
+        <div class="about-video-container">
+            <video autoplay muted loop playsinline>
+                <source src="recursos/video_saludando.mp4" type="video/mp4">
+            </video>
+            <div class="about-video-caption">BIENVENIDO A MI MUNDO</div>
+        </div>
+    </div>
+</section>
+<section id="history-page" class="full-page hidden">
+    <video class="page-background" autoplay muted loop playsinline>
+        <source src="recursos/fondo_mihistoria.mp4" type="video/mp4">
+    </video>
+    <header class="page-header">
+        <div class="brand">ANGEL OS</div>
+        <button class="page-back" id="back-history">◀ VOLVER AL INVENTARIO</button>
+    </header>
+    <div class="history-content">
+        <div class="history-hero">
+            <img src="recursos/logo_mihistoria.png" class="history-logo" alt="Historia">
+            <div class="history-intro">
+                <p class="welcome-line">ARCHIVO PERSONAL DEL JUGADOR</p>
+                <h1>Mi historia</h1>
+                <p>
+                    Todos tenemos un punto de partida.
+                    Esta es la historia de cómo empezó mi aventura,
+                    las personas que conocí y los caminos que me trajeron hasta aquí.
+                </p>
+            </div>
+            <div class="history-video-box">
+                <video class="history-video" autoplay muted loop playsinline>
+                    <source src="recursos/video_mihistoria.mp4" type="video/mp4">
+                </video>
+                <div class="history-video-label">UN RECORRIDO POR MI VIDA</div>
+            </div>
+        </div>
+        <h2 class="timeline-title">MI LÍNEA DEL TIEMPO</h2>
+        <div class="timeline">
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 01 · PREESCOLAR</span>
+                    <h3>Un comienzo tranquilo</h3>
+                    <p>
+                        Cuando estaba en kínder era un niño bastante tranquilo.
+                        Casi no tenía amigos; de hecho, solamente tenía uno.
+                    </p>
+                    <p>
+                        Una vez casi me entierro un palo de metal en el ojo.
+                        Por poco lo pierdo, pero aquí seguimos contando la historia.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 02 · PRIMARIA</span>
+                    <h3>Una etapa bastante normal</h3>
+                    <p>
+                        Mi paso por la primaria fue bastante tranquilo.
+                        Si tuviera que describirlo en pocas palabras,
+                        diría que se me hizo algo aburrido.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 03 · SECUNDARIA</span>
+                    <h3>La época dorada</h3>
+                    <p>
+                        La secundaria fue una de las etapas que más disfruté.
+                        Tenía muchos amigos, salíamos casi todos los días
+                        y siempre encontrábamos algo que hacer.
+                    </p>
+                    <p>
+                        Éramos unos vagos y hacíamos un desmadre,
+                        pero fueron años llenos de buenos recuerdos.
+                        También fue cuando comenzó a interesarme la programación.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 04 · MIS PRIMEROS PROYECTOS</span>
+                    <h3>El inicio de mi aventura en la programación</h3>
+                    <p>
+                        Aproximadamente a los 11 años hice mi primer videojuego
+                        en <strong>Roblox Studio</strong>.
+                    </p>
+                    <p>
+                        Me encantaba crear juegos. Me la pasaba todos los días
+                        viendo tutoriales, aprendiendo herramientas y tratando
+                        de descubrir cómo funcionaba todo.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 05 · PREPARATORIA</span>
+                    <h3>Una nueva etapa</h3>
+                    <p>
+                        Durante la preparatoria comencé a enfocarme mucho más
+                        en mis estudios. Aunque no me fue nada mal, poco a poco
+                        sentí que aquella chispa por desarrollar videojuegos
+                        se iba apagando.
+                    </p>
+                    <p>
+                        En tercero llegaron nuevas amistades, tuve novia,
+                        hice viajes y viví experiencias especiales.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 06 · SEXTO SEMESTRE</span>
+                    <h3>Recuperando la chispa</h3>
+                    <p>
+                        En sexto semestre decidí volver a avanzar con mis
+                        proyectos de videojuegos. Estaba un poco oxidado,
+                        pero poco a poco fui recuperando mis habilidades.
+                    </p>
+                    <p>
+                        Tal vez la chispa nunca desapareció; solamente
+                        estaba esperando el momento para volver a encenderse.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 07 · VACACIONES DE GRADUADO</span>
+                    <h3>El mundo laboral</h3>
+                    <p>
+                        Después de graduarme decidí trabajar y conocer
+                        experiencias fuera de la escuela.
+                    </p>
+                    <p>
+                        Trabajé dos veces como <strong>mesero</strong>,
+                        una vez como <strong>cajero</strong> y también
+                        trabajé con <strong>fosas sépticas en Estados Unidos</strong>.
+                        Cada trabajo me dejó nuevos aprendizajes.
+                    </p>
+                </div>
+            </article>
+            <article class="history-chapter">
+                <div class="chapter-marker"></div>
+                <div class="chapter-card">
+                    <span class="chapter-number">CAPÍTULO 08 · ACTUALIDAD</span>
+                    <h3>Un nuevo mundo: la universidad</h3>
+                    <p>
+                        Después de terminar mis vacaciones de graduado,
+                        comenzó una nueva aventura: la universidad.
+                    </p>
+                    <p>
+                        Actualmente estudio <strong>Ingeniería en Sistemas
+                        en La Salle Chihuahua</strong>. Aquí comienza otro
+                        capítulo con nuevos retos, conocimientos y proyectos.
+                    </p>
+                </div>
+            </article>
+        </div>
+        <div class="history-ending">
+            <h2>LA AVENTURA CONTINÚA...</h2>
+            <p>
+                Esta historia todavía se está escribiendo.
+                Aún quedan muchos mundos por explorar, proyectos por crear
+                y experiencias por vivir.
+            </p>
+            <p><strong>Continuará...</strong></p>
+        </div>
+    </div>
+</section>
+
+<section id="adventures-page" class="full-page hidden">
+    <video class="page-background" autoplay muted loop playsinline>
+        <source src="recursos/fondo_aventuras.mp4" type="video/mp4">
+    </video>
+    <header class="page-header">
+        <div class="brand">ANGEL OS</div>
+        <button class="page-back" id="back-adventures">◀ VOLVER AL INVENTARIO</button>
+    </header>
+    <div class="adventure-content">
+        <div class="adventure-hero">
+            <img src="recursos/icono_aventuras.webp" class="adventure-logo" alt="Aventuras">
+            <div>
+                <div class="adventure-kicker">DIARIO DE EXPLORACIÓN · MODO AVENTURA</div>
+                <h1>Mis aventuras</h1>
+                <p>
+                    Hay lugares que se visitan y lugares que se quedan contigo.
+                    Aquí guardo algunos recuerdos de los mundos que he tenido
+                    la oportunidad de conocer.
+                </p>
+            </div>
+        </div>
+        <div class="adventure-videos">
+            <div class="adventure-video-card">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_aventuras1.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="adventure-video-card">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_aventuras2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <section class="destination">
+            <div class="destination-heading">
+                <div>
+                    <div class="destination-number">DESTINO 01</div>
+                    <h2>COLOMBIA</h2>
+                </div>
+                <p>RECUERDOS DE VIAJE</p>
+            </div>
+            <div class="photo-grid colombia-grid">
+                <button class="photo-card" data-caption="COLOMBIA · RECUERDO 01">
+                    <img src="recursos/colombia.jpg" alt="Colombia">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">COLOMBIA · 01</span>
+                </button>
+                <button class="photo-card" data-caption="COLOMBIA · RECUERDO 02">
+                    <img src="recursos/colombia2.jpg" alt="Colombia">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">COLOMBIA · 02</span>
+                </button>
+                <button class="photo-card" data-caption="COLOMBIA · RECUERDO 03">
+                    <img src="recursos/colombia3.jpg" alt="Colombia">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">COLOMBIA · 03</span>
+                </button>
+            </div>
+        </section>
+        <section class="destination">
+            <div class="destination-heading">
+                <div>
+                    <div class="destination-number">DESTINO 02</div>
+                    <h2>UNIVERSAL</h2>
+                </div>
+                <p>UN DÍA PARA RECORDAR</p>
+            </div>
+            <div class="photo-grid universal-grid">
+                <button class="photo-card" data-caption="UNIVERSAL · RECUERDO 01">
+                    <img src="recursos/disney.jpg" alt="Universal">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">UNIVERSAL · 01</span>
+                </button>
+                <button class="photo-card" data-caption="UNIVERSAL · RECUERDO 02">
+                    <img src="recursos/disney2.jpg" alt="Universal">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">UNIVERSAL · 02</span>
+                </button>
+                <button class="photo-card" data-caption="UNIVERSAL · RECUERDO 03">
+                    <img src="recursos/disney3.jpg" alt="Universal">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">UNIVERSAL · 03</span>
+                </button>
+                <button class="photo-card" data-caption="UNIVERSAL · RECUERDO 04">
+                    <img src="recursos/disney4.jpg" alt="Universal">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">UNIVERSAL · 04</span>
+                </button>
+            </div>
+        </section>
+        <section class="destination">
+            <div class="destination-heading">
+                <div>
+                    <div class="destination-number">DESTINO 03</div>
+                    <h2>POTOSÍ</h2>
+                </div>
+                <p>NATURALEZA Y MOMENTOS</p>
+            </div>
+            <div class="photo-grid potosi-grid">
+                <button class="photo-card" data-caption="POTOSÍ · RECUERDO 01">
+                    <img src="recursos/potosi.jpg" alt="Potosí">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">POTOSÍ · 01</span>
+                </button>
+                <button class="photo-card" data-caption="POTOSÍ · RECUERDO 02">
+                    <img src="recursos/potosi2.jpg" alt="Potosí">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">POTOSÍ · 02</span>
+                </button>
+                <button class="photo-card" data-caption="POTOSÍ · RECUERDO 03">
+                    <img src="recursos/potosi3.jpg" alt="Potosí">
+                    <span class="photo-hint">VER FOTO ↗</span>
+                    <span class="photo-label">POTOSÍ · 03</span>
+                </button>
+            </div>
+        </section>
+        <div class="adventure-note">
+            El mundo es demasiado grande para quedarse en un solo lugar.
+            Estas son algunas de las aventuras que forman parte de mi historia.
+        </div>
+        <div class="adventure-ending">
+            FIN DEL REGISTRO · LA EXPLORACIÓN CONTINÚA
+        </div>
+    </div>
+</section>
+
+<section id="favorites-page" class="full-page hidden">
+    <video class="page-background" autoplay muted loop playsinline>
+        <source src="recursos/fondo_misgustos.mp4" type="video/mp4">
+    </video>
+    <header class="page-header">
+        <div class="brand">ANGEL OS</div>
+        <button class="page-back" id="back-favorites">
+            ◀ VOLVER AL INVENTARIO
+        </button>
+    </header>
+    <div class="tastes-content">
+        <div class="tastes-hero">
+            <img src="recursos/icono_misgustos.webp"
+                 class="tastes-logo"
+                 alt="Mis gustos">
+            <div>
+                <div class="tastes-kicker">
+                    ARCHIVO PERSONAL · INTERESES DEL JUGADOR
+                </div>
+                <h1>Mis gustos</h1>
+                <p>
+                    Todos tenemos cosas que nos apasionan.
+                    Aquí encontrarás algunos videojuegos, series y pasatiempos
+                    que forman parte de mi mundo.
+                </p>
+            </div>
+        </div>
+        <h2 class="tastes-section-title">VIDEOJUEGOS</h2>
+        <article class="taste-card">
+            <div class="taste-media">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_misgustos.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="taste-info">
+                <div class="taste-category">VIDEOJUEGO · SUPERVIVENCIA Y CREATIVIDAD</div>
+                <img src="recursos/titulo_misgustos3new.png"
+                     class="taste-title-image"
+                     alt="Minecraft">
+                <p>
+                    Minecraft es uno de mis videojuegos favoritos y
+                    forma parte de mi vida desde que era pequeño.
+                    Es uno de esos juegos a los que siempre puedo regresar.
+                </p>
+                <p>
+                    Me encanta la libertad que ofrece para explorar,
+                    construir, sobrevivir y crear prácticamente cualquier cosa.
+                    Cada mundo puede convertirse en una aventura diferente.
+                </p>
+            </div>
+        </article>
+        <article class="taste-card reverse">
+            <div class="taste-media">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_misgustos2.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="taste-info">
+                <div class="taste-category">VIDEOJUEGO · AVENTURA Y PUZLES</div>
+                <img src="recursos/titulo_misgustos.webp"
+                     class="taste-title-image"
+                     alt="OneShot">
+                <p>
+                    OneShot es un videojuego protagonizado por Niko,
+                    un pequeño personaje con apariencia de gato que
+                    despierta en un mundo extraño y desconocido.
+                </p>
+                <p>
+                    Su misión es devolver la luz a un mundo que ha
+                    quedado sumido en la oscuridad. Durante el viaje
+                    se resuelven acertijos, se conocen personajes
+                    y se descubren secretos.
+                </p>
+                <p>
+                    Es una aventura que rompe un poco la cuarta pared
+                    y crea una conexión muy particular entre el jugador
+                    y el protagonista.
+                </p>
+            </div>
+        </article>
+        <h2 class="tastes-section-title">SERIES Y ANIME</h2>
+        <article class="taste-card">
+            <div class="taste-media">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_misgustos5.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="taste-info">
+                <div class="taste-category">SERIE · DRAMA Y CRIMEN</div>
+                <img src="recursos/titulo_misgustos2.webp"
+                     class="taste-title-image"
+                     alt="Breaking Bad">
+                <p>
+                    Breaking Bad cuenta la historia de Walter White,
+                    un profesor de química que, después de recibir
+                    un diagnóstico de cáncer, toma una decisión
+                    que cambiará completamente su vida.
+                </p>
+                <p>
+                    Junto a Jesse Pinkman comienza a fabricar
+                    metanfetamina, adentrándose en un mundo cada vez
+                    más peligroso. Me gusta su historia, sus personajes
+                    y la manera en que evoluciona todo.
+                </p>
+            </div>
+        </article>
+        <article class="taste-card reverse">
+            <div class="taste-media">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_misgustos4.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="taste-info">
+                <div class="taste-category">ANIME · CIENCIA FICCIÓN Y ACCIÓN</div>
+                <h2>GURREN LAGANN</h2>
+                <p>
+                    Gurren Lagann es un anime que sigue a Simon y Kamina,
+                    dos jóvenes que viven bajo tierra y sueñan con
+                    descubrir qué existe más allá de su mundo.
+                </p>
+                <p>
+                    Su aventura comienza cuando encuentran un misterioso
+                    robot y se enfrentan a un universo lleno de enemigos,
+                    batallas y desafíos cada vez más grandes.
+                </p>
+                <p>
+                    Es una historia sobre la amistad, la determinación
+                    y nunca dejar de avanzar, incluso cuando todo parece imposible.
+                </p>
+            </div>
+        </article>
+        <h2 class="tastes-section-title">PASATIEMPOS Y CREATIVIDAD</h2>
+        <article class="taste-card">
+            <div class="taste-media">
+                <video autoplay muted loop playsinline preload="auto">
+                    <source src="recursos/video_misgustos3.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="taste-info">
+                <div class="taste-category">PASATIEMPO · PROGRAMACIÓN Y DESARROLLO</div>
+                <h2>CREAR VIDEOJUEGOS</h2>
+                <p>
+                    Una de las cosas que más disfruto es crear videojuegos.
+                    Me gusta experimentar con ideas, diseñar escenarios
+                    y convertir conceptos en algo que otras personas
+                    puedan jugar.
+                </p>
+                <p>
+                    Roblox Studio fue una de las herramientas que despertó
+                    mi interés por la programación cuando era pequeño.
+                    Desde entonces me ha gustado aprender cómo funcionan
+                    los videojuegos y descubrir todo lo que se puede crear
+                    con código.
+                </p>
+                <p>
+                    Para mí, desarrollar un juego es una combinación
+                    de creatividad, paciencia y aprendizaje.
+                </p>
+            </div>
+        </article>
+        <div class="tastes-ending">
+            <h2>ESTOS SON ALGUNOS DE MIS MUNDOS</h2>
+            <p>
+                Videojuegos, historias, personajes y proyectos.
+                Cada uno forma parte de las cosas que disfruto.
+            </p>
+            <p><strong>Y todavía hay mucho más por descubrir...</strong></p>
+        </div>
+    </div>
+</section>
+
+<div id="window-layer" class="hidden">
+    <section class="window">
+        <div class="window-head">
+            <h2 id="window-title">CONTACTO</h2>
+            <button class="close" id="close-window">✕ CERRAR</button>
+        </div>
+        <div class="window-body" id="window-body"></div>
+    </section>
+</div>
+
+<div id="photo-lightbox" class="hidden">
+    <button class="lightbox-close" id="lightbox-close">
+        ✕ CERRAR
+    </button>
+    <img id="lightbox-image" src="" alt="Fotografía ampliada">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+</div>
+
+<audio id="click-sound" src="sounds/click.mp3" preload="auto"></audio>
+
+<script>
+const intro = document.getElementById("intro");
+const desktop = document.getElementById("desktop");
+const enterButton = document.getElementById("enter");
+const clickSound = document.getElementById("click-sound");
+const layer = document.getElementById("window-layer");
+const windowTitle = document.getElementById("window-title");
+const windowBody = document.getElementById("window-body");
+const aboutPage = document.getElementById("about-page");
+const historyPage = document.getElementById("history-page");
+const adventuresPage = document.getElementById("adventures-page");
+const favoritesPage = document.getElementById("favorites-page");
+const audio = document.getElementById("audio");
+
+function playClick() {
+    clickSound.currentTime = 0;
+    const playback = clickSound.play();
+    if (playback) {
+        playback.catch(() => {});
+    }
+}
+
+enterButton.addEventListener("click", () => {
+    playClick();
+    enterButton.disabled = true;
+    enterButton.textContent = "INICIANDO ANGEL OS...";
+    intro.classList.add("leaving");
+    setTimeout(() => {
+        intro.classList.add("hidden");
+        desktop.classList.remove("hidden");
+    }, 750);
+});
+
+enterButton.addEventListener('click', () =>{
+    audio.play();
+});
+
+const apps = {
+    contact: {
+        title: "CONTACTO",
+        content: `
+            <h3>¿Hablamos?</h3>
+            <p>Si quieres ponerte en contacto conmigo, puedes escribirme directamente.</p>
+            <div style="border:1px dashed #aaa8;padding:18px;background:#ffffff0b;margin-top:18px">
+                <p style="margin:0 0 8px;color:#b9aaff;font-size:12px;letter-spacing:2px">
+                    CORREO ELECTRÓNICO
+                </p>
+                <a href="mailto:angelfoo110@gmail.com"
+                   style="color:white;font-weight:bold;text-decoration:none;font-size:17px">
+                    ✉ angelfoo110@gmail.com
+                </a>
+                <p style="margin:18px 0 0">
+                    <a href="mailto:angelfoo110@gmail.com"
+                       style="display:inline-block;background:#555;color:white;border:2px solid #999;padding:11px 16px;text-decoration:none;font-weight:bold;letter-spacing:1px">
+                        ENVIAR CORREO
+                    </a>
+                </p>
+            </div>
+        `
+    }
+};
+
+document.querySelectorAll(".app").forEach(button => {
+    button.addEventListener("click", () => {
+        playClick();
+        const selected = button.dataset.app;
+        if (selected === "about") {
+            desktop.classList.add("hidden");
+            aboutPage.classList.remove("hidden");
+            return;
+        }
+        if (selected === "story") {
+            desktop.classList.add("hidden");
+            historyPage.classList.remove("hidden");
+            return;
+        }
+        if (selected === "adventures") {
+            desktop.classList.add("hidden");
+            adventuresPage.classList.remove("hidden");
+            return;
+        }
+        if (selected === "favorites") {
+            desktop.classList.add("hidden");
+            favoritesPage.classList.remove("hidden");
+            return;
+        }
+        const app = apps[selected];
+        if (!app) return;
+        windowTitle.textContent = app.title;
+        windowBody.innerHTML = app.content;
+        layer.classList.remove("hidden");
+    });
+});
+
+function returnToDesktop(page) {
+    playClick();
+    page.classList.add("hidden");
+    desktop.classList.remove("hidden");
+}
+
+document.getElementById("back-about").addEventListener("click", () => {
+    returnToDesktop(aboutPage);
+});
+document.getElementById("back-history").addEventListener("click", () => {
+    returnToDesktop(historyPage);
+});
+document.getElementById("back-adventures").addEventListener("click", () => {
+    returnToDesktop(adventuresPage);
+});
+document.getElementById("back-favorites").addEventListener("click", () => {
+    returnToDesktop(favoritesPage);
+});
+
+function closeWindow() {
+    layer.classList.add("hidden");
+}
+document.getElementById("close-window").addEventListener("click", closeWindow);
+layer.addEventListener("click", e => {
+    if (e.target === layer) closeWindow();
+});
+
+const lightbox = document.getElementById("photo-lightbox");
+const lightboxImage = document.getElementById("lightbox-image");
+const lightboxCaption = document.getElementById("lightbox-caption");
+
+document.querySelectorAll(".photo-card").forEach(card => {
+    card.addEventListener("click", () => {
+        const photo = card.querySelector("img");
+        lightboxImage.src = photo.src;
+        lightboxCaption.textContent = card.dataset.caption;
+        lightbox.classList.remove("hidden");
+        playClick();
+    });
+});
+
+function closeLightbox() {
+    lightbox.classList.add("hidden");
+    lightboxImage.src = "";
+}
+document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+lightbox.addEventListener("click", e => {
+    if (e.target === lightbox) closeLightbox();
+});
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        closeWindow();
+        closeLightbox();
+    }
+});
+
+function updateClock() {
+    document.getElementById("clock").textContent =
+        new Date().toLocaleTimeString("es-MX", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+}
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
